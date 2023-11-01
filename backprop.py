@@ -1,4 +1,6 @@
 import numpy as np
+import matplotlib.pyplot as plt
+from sklearn.datasets import fetch_openml
 
 # Neural Network Structure
 def initialize_parameters(input_size, hidden_size, output_size):
@@ -82,3 +84,64 @@ def update_parameters(parameters, grads, learning_rate=0.01):
     
     parameters = {"W1": W1, "b1": b1, "W2": W2, "b2": b2}
     return parameters
+
+# Loading and Preprocessing Data    
+mnist = fetch_openml('mnist_784')
+X, Y = mnist['data'], mnist['target']
+
+# We have to normalize the pixel values
+X = X / 255.0
+
+# Convert labels to integers and then to one-hot encoding
+Y = Y.astype(int)
+Y_one_hot = np.eye(10)[Y].T
+
+
+# Splitting the Data
+split = 60000
+X_train, X_test = X[:split].T, X[split:].T
+Y_train, Y_test = Y_one_hot[:,:split], Y_one_hot[:,split:]
+
+
+# Initialize Parameters
+parameters = initialize_parameters(784, 128, 10)
+
+# Training the Neural Network :)
+epochs = 1000
+learning_rate = 0.1
+for i in range(epochs):
+    # Forward propagation
+    A2, cache = forward_propagation(X_train, parameters)
+    
+    # Compute loss
+    loss = compute_cross_entropy_loss(Y_train, A2)
+    
+    # Backward propagation
+    grads = backward_propagation(parameters, cache, X_train, Y_train)
+    
+    # Update parameters
+    parameters = update_parameters(parameters, grads, learning_rate)
+    
+    if i % 100 == 0:
+        print(f"Epoch {i}, Loss: {loss}")
+
+
+# Model Evaluation
+
+# Forward propagation on the test set
+A2, _ = forward_propagation(X_test, parameters)
+
+# Convert predictions to labels
+predictions = np.argmax(A2, axis=0)
+labels = np.argmax(Y_test, axis=0)
+
+# Compute accuracy
+accuracy = np.mean(predictions == labels)
+print(f"Test Accuracy: {accuracy * 100:.2f}%")
+
+
+# To Help Visualize Predictions
+index = np.random.randint(X_test.shape[1])
+plt.imshow(X_test[:, index].reshape(28, 28), cmap='gray')
+plt.title(f"Predicted: {predictions[index]}, True: {labels[index]}")
+plt.show()
