@@ -43,7 +43,7 @@ class MLP(BaseEstimator, ClassifierMixin):
         self.inputLayer = 4 # We have 4 different types of data to feed as inputs
         self.hiddenLayer = 5
         self.outputLayer = 3 # There are 3 clasfications for this dataset
-        self.learningRate = 0.01
+        self.learningRate = 0.005
         self.maxEpochs = 1000
         self.biasHiddenValue = -1
         self.biasOutputValue = -1
@@ -185,7 +185,7 @@ for i in range(len(test_y)):
     elif(test_y[i] == 1): numVersicolour += 1
     elif(test_y[i] == 2): numVirginica += 1
 
-for i in range(len(test_files)):
+for i in range(len(test_y)):
     ###### may have an issue here with the if statements
     if(test_y[i] == previous[i]):
         hits += 1
@@ -196,7 +196,7 @@ for i in range(len(test_files)):
     elif(test_y[i] == previous[i] and test_y[i] == 2): 
         virginica += 1
 
-hits = (hits / len(test_files)) * 100
+hits = (hits / len(test_y)) * 100
 faults = 100 - hits
 
 data
@@ -212,7 +212,7 @@ hitsGraph.append(hits)
 hitsGraph.append(faults)
 labels = 'Hits', 'Faults'
 sizes = [95, 3]
-explode = (0, 0.1)
+explode = (0, 0.14)
 
 fig1, ax1 = plt.subplots()
 ax1.pie(hitsGraph,explode=explode,colors=['green', 'red'], autopct='%1.1f%%',labels=labels,shadow=True,startangle=90)
