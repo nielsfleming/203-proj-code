@@ -72,22 +72,29 @@ class MLP(BaseEstimator, ClassifierMixin):
     def Backpropagation_Algorithm(self, x):
         # Error for output layer
         output = []
+        # Calculate the error for the output layer (difference between predicted and actual values)
         errOutput = self.output - self.outputL2
+        # Calculate the gradient for the output layer errors by applying the derivative of the activation function
         output = ((-1)*errOutput) * self.derivative(self.outputL2)
 
-        # Updating weights in output layer and hidden layer
+        # Update the weights and biases for the output layer
         for i in range(self.hiddenLayer):
             for j in range(self.outputLayer):
+                # Adjust weights by the product of learning rate, error gradient, and output from the last hidden layer neuron
                 self.weightOutput[i][j] -= (self.learningRate * (output[j] * self.outputL1[i]))
+                # Adjust biases for the output layer
                 self.biasOutput[j] -= (self.learningRate * output[j])
 
-        # Error for hidden layer
+        # Calculate the error for the hidden layer by propagating the output gradients back through the weights
+        # Apply the derivative of the activation function to the hidden layer's output
         hidden = np.matmul(self.weightOutput, output) * self.derivative(self.outputL1)
 
-        # Updating weights in hidden layer and input layer
+        # Update the weights and biases for the hidden layer
         for i in range(self.inputLayer):
             for j in range(self.hiddenLayer):
+                # Adjust weights by the product of learning rate, error gradient, and input features
                 self.weightHidden[i][j] -= (self.learningRate * (hidden[j] * x[i]))
+                # Adjust biases for the hidden layer
                 self.biasHidden[j] -= (self.learningRate * hidden[j])
 
     
